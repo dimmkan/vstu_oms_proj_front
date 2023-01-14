@@ -19,6 +19,11 @@ const router = createRouter({
       name: 'user-cabinet',
       component: () => import('../components/UserCabinetView.vue')
     },
+    {
+      path: '/register-info',
+      name: 'register-info',
+      component: () => import('../components/RegisterInfo.vue')
+    },
     { 
       path: '/:pathMatch(.*)*',
       name: 'NotFound',
@@ -28,7 +33,6 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  
   if ((to.name !== 'login' && to.name !== 'NotFound') && !localStorage.accessToken) next({ name: 'login' })
   else next()
 })

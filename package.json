@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "axios": "^1.2.2",
+    "jwt-check-expiration": "^1.0.5",
     "primeflex": "^3.3.0",
     "primeicons": "^6.0.1",
     "primevue": "^3.22.1",
+    "ramda": "^0.28.0",
     "vue": "^3.2.45",
     "vue-reactive-storage": "github:ropbla9/vue-reactive-storage",
     "vue-router": "^4.1.6"

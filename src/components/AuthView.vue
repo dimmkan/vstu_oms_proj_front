@@ -2,11 +2,12 @@
   <div class="login-page">
     <div class="form">
       <form @submit.prevent="handleRegister" class="register-form" v-show=showRegister>
-        <input type="text" placeholder="email" required />
-        <input type="password" placeholder="пароль" required />
-        <input type="text" placeholder="ФИО" required />
+        <input type="text" v-model="email" placeholder="email" required />
+        <input type="password" v-model="password" placeholder="пароль" required />
+        <input type="text" v-model="fullName" placeholder="ФИО" required />
         <button type="submit">создать</button>
         <p class="message">Уже зарегистрированы? <a href="#" @click="changeShow">Вход</a></p>
+        <p class="message" v-if="auth_error" style="color:red">Произошла ошибка регистрации - {{ error_message }}</p>
       </form>
       <form @submit.prevent="handleLogin" class="login-form" v-show=!showRegister>
         <input type="text" v-model="email" placeholder="email" required />
@@ -36,6 +37,7 @@ export default {
       password: '',
       fullName: '',
       auth_error: false,
+      error_message: ''
     }
   },
   methods: {
@@ -59,7 +61,22 @@ export default {
         }, 3000);
       })
     },
-    handleRegister() { },
+    handleRegister() {
+      instance.post('/auth/register', {
+        email: this.email,
+        password: this.password,
+        fullName: this.fullName,
+      }).then(() => {
+        this.$router.push('/register-info');
+      }).catch((error) => {
+        console.log(error);
+        this.auth_error = true;
+        this.error_message = error.response.data.message || 'Unknown error';
+        setTimeout(() => {
+          this.auth_error = false;
+        }, 5000);
+      })
+    },
   },
 };
 
