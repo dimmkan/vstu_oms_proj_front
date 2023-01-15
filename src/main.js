@@ -11,6 +11,8 @@ import TabPanel from 'primevue/tabpanel';
 import Avatar from 'primevue/avatar';
 import InputText from 'primevue/inputtext';
 import Dropdown from 'primevue/dropdown';
+import Dialog from 'primevue/dialog';
+import FileUpload from 'primevue/fileupload';
 
 
 import 'primevue/resources/themes/lara-light-teal/theme.css';
@@ -34,6 +36,9 @@ app.component('TabPanel', TabPanel);
 app.component('Avatar', Avatar);
 app.component('InputText', InputText);
 app.component('Dropdown', Dropdown);
+app.component('Dialog', Dialog);
+app.component('FileUpload', FileUpload);
+
 
 
 app.mount('#app');
