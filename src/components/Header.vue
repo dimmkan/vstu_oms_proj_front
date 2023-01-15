@@ -41,7 +41,7 @@ export default {
 
   computed: {
     isAuth() {
-      return this.localStorage.accessToken !== '';
+      return this.localStorage.accessToken !== '' && this.$router.currentRoute.value.name !== 'login';
     },
   },
 }

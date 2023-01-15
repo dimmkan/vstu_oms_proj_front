@@ -72,6 +72,70 @@
           <template #header>
             <span>Активные</span>
           </template>
+          <DataTable :value="activeOrders" :paginator="true" class="p-datatable-orders" :rows="10" dataKey="id"
+            :rowHover="true" v-model:filters="filters" filterDisplay="menu"
+            paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+            :rowsPerPageOptions="[10, 25, 50]"
+            currentPageReportTemplate="Показаны записи с {first} по {last} из {totalRecords} записей"
+            :globalFilterFields="['id', 'theme', 'description']" responsiveLayout="scroll">
+            <template #header>
+              <div class="flex justify-content-between align-items-center">
+                <h5 class="m-0">Активные заявки</h5>
+                <span class="p-input-icon-left">
+                  <i class="pi pi-search" />
+                  <InputText v-model="filters['global'].value" placeholder="Поиск" />
+                </span>
+              </div>
+            </template>
+            <template #empty>
+              Заявки не найдены.
+            </template>
+            <template #loading>
+              Заявки загружаются, пожалуйста подождите.
+            </template>
+            <Column field="id" header="Номер заявки" sortable dataType="numeric" style="min-width: 8rem">
+              <template #body="{ data }">
+                {{ data.id }}
+              </template>
+              <template #filter="{ filterModel }">
+                <InputNumber v-model="filterModel.value" />
+              </template>
+            </Column>
+            <Column field="status" header="Статус" sortable style="min-width: 10rem">
+              <template #body="{ data }">
+                <Tag :rounded="true" :severity="data.status === 'inprogress' ? 'warning' : 'info'">{{
+                statuses[data.status] }}</Tag>
+              </template>
+            </Column>
+            <Column field="theme" header="Тема" sortable style="min-width: 14rem">
+              <template #body="{ data }">
+                {{ data.theme }}
+              </template>
+              <template #filter="{ filterModel }">
+                <InputText type="text" v-model="filterModel.value" class="p-column-filter"
+                  placeholder="Поиск по теме" />
+              </template>
+            </Column>
+            <Column field="description" header="Описание заявки" sortable style="min-width: 14rem">
+              <template #body="{ data }">
+                {{ data.description }}
+              </template>
+              <template #filter="{ filterModel }">
+                <InputText type="text" v-model="filterModel.value" class="p-column-filter"
+                  placeholder="Поиск по описанию" />
+              </template>
+            </Column>
+            <Column field="date_created" header="Дата создания" sortable dataType="date" style="min-width: 8rem">
+              <template #body="{ data }">
+                {{ formatDate(data.date_created) }}
+              </template>
+            </Column>
+            <Column field="date_updated" header="Дата последнего изменения" sortable dataType="date" style="min-width: 8rem">
+              <template #body="{ data }">
+                {{ formatDate(data.date_updated) }}
+              </template>
+            </Column>
+          </DataTable>
         </TabPanel>
         <TabPanel>
           <template #header>
@@ -94,6 +158,7 @@ import axios from 'axios';
 import * as R from 'ramda';
 import { email, required } from "@vuelidate/validators";
 import { useVuelidate } from "@vuelidate/core";
+import { FilterMatchMode, FilterOperator } from 'primevue/api';
 
 const API_URL = import.meta.env.VITE_API_URL;
 const instance = axios.create({
@@ -114,6 +179,12 @@ export default {
 
   data() {
     return {
+      statuses: {
+        accepted: 'Принята',
+        inprogress: 'В работе',
+        finished: 'Выполнена'
+      },
+      orders: [],
       uploadedFiles: [],
       displayModal: false,
       imageAddress: 'http://192.168.221.142:8055/assets/7dc88415-8cae-4a20-91db-f75f4912afe6',
@@ -136,6 +207,15 @@ export default {
         { name: 'Общежитие №2, пр-кт Московский, 52', value: 2 },
         { name: 'Общежитие №3, пр-кт Московский, 176', value: 3 },
       ],
+
+      filters: {
+        'global': { value: null, matchMode: FilterMatchMode.CONTAINS },
+        'id': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.EQUALS }] },
+        'theme': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        'description': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.STARTS_WITH }] },
+        'date_created': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+        'date_updated': { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
+      },
     };
   },
 
@@ -163,6 +243,7 @@ export default {
           this.localStorage.accessToken = response.data.access_token;
           this.localStorage.refreshToken = response.data.refresh_token;
           this.getUserInfo(this.localStorage.accessToken)
+          this.getUserOrders(this.localStorage.accessToken)
         })
         .catch(() => {
           this.localStorage.accessToken = '';
@@ -171,6 +252,7 @@ export default {
         })
     } else {
       this.getUserInfo(this.localStorage.accessToken)
+      this.getUserOrders(this.localStorage.accessToken)
     }
   },
 
@@ -181,7 +263,11 @@ export default {
 
     disabledButton() {
       return this.v$.$invalid;
-    }
+    },
+
+    activeOrders() {
+      return this.orders.filter(item => item.status !== 'finished');
+    },
   },
 
   methods: {
@@ -244,6 +330,22 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       }).then(() => this.displayModal = false).catch(console.log);
+    },
+
+    getUserOrders(accessToken) {
+      instance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
+      instance.get('/order').then((response) => {
+        this.orders = response.data.data;
+      }).catch((error) => console.log(error))
+    },
+
+    formatDate(value) {
+      const time = new Date(value);
+      return time.toLocaleDateString('ru-RU', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      });
     },
   },
 
