@@ -17,6 +17,8 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Tag from 'primevue/tag';
 import Calendar from 'primevue/calendar';
+import Textarea from 'primevue/textarea';
+import InputNumber from 'primevue/inputnumber';
 
 
 import 'primevue/resources/themes/lara-light-teal/theme.css';
@@ -46,7 +48,8 @@ app.component('DataTable', DataTable);
 app.component('Column', Column);
 app.component('Tag', Tag);
 app.component('Calendar', Calendar);
-
+app.component('Textarea', Textarea);
+app.component('InputNumber', InputNumber);
 
 
 app.mount('#app');
