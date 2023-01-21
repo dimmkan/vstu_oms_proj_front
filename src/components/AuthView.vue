@@ -1,4 +1,9 @@
 <template>
+  <div class="flex justify-content-center">
+    <header>
+      <h1>Система управления заявками</h1>
+    </header>
+  </div>
   <div class="login-page">
     <div class="form">
       <form @submit.prevent="handleRegister" class="register-form" v-show=showRegister>
@@ -194,4 +199,19 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+header h1 {
+  font-family: "Courier M OT Light";
+  font-size: 70px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+
+@font-face {
+	font-family: 'Courier M OT Light'; 
+	src: local('Courier M OT Light'),
+		url('../assets/fonts/19007.otf'); 
+}
+
 </style>
