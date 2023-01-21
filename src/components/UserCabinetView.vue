@@ -289,7 +289,7 @@
       <b>
         <p>Данные профиля</p>
       </b>
-      <form @submit.prevent="handleSubmit(!v$.$invalid)">
+      <form @submit.prevent="handleSubmit(!v$.user.$invalid)">
         <div class="mt-5">
           <Avatar :image="imageAddress" size="xlarge" shape="circle" @click="displayModal = true">
           </Avatar>
@@ -475,7 +475,7 @@ export default {
     },
 
     disabledButton() {
-      return this.v$.$invalid;
+      return this.v$.user.$invalid;
     },
 
     disabledCreateOrderButton() {
