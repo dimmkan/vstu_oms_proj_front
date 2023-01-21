@@ -1,0 +1,8 @@
+version: '3'
+services:
+  app:
+    image: vstu_oms_proj_front:latest
+    container_name: vstu_oms_proj_front
+    restart: always
+    ports:
+      - 4200:8080
