@@ -355,6 +355,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { FilterMatchMode, FilterOperator } from 'primevue/api';
 
 const API_URL = import.meta.env.VITE_API_URL;
+const ADMIN_URL = import.meta.env.VITE_ADMIN_URL;
 const instance = axios.create({
   baseURL: API_URL,
   timeout: 10000,
@@ -383,7 +384,7 @@ export default {
       showCreateOrderModal: false,
       showUpdateOrderModal: false,
       displayModal: false,
-      imageAddress: 'http://192.168.221.142:8055/assets/7dc88415-8cae-4a20-91db-f75f4912afe6',
+      imageAddress: `${ADMIN_URL}/assets/7dc88415-8cae-4a20-91db-f75f4912afe6`,
       user: {
         email: '',
         user_profile: {
@@ -500,7 +501,7 @@ export default {
       instance.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
       instance.get('/user/avatar').then((response) => {
         const avatarID = response.data.avatar_id;
-        this.imageAddress = avatarID ? `http://192.168.221.142:8055/assets/${avatarID}` : 'http://192.168.221.142:8055/assets/7dc88415-8cae-4a20-91db-f75f4912afe6';
+        this.imageAddress = avatarID ? `${ADMIN_URL}/assets/${avatarID}` : `${ADMIN_URL}/assets/7dc88415-8cae-4a20-91db-f75f4912afe6`;
       }).catch((error) => console.log(error))
 
       instance.get('/user').then((response) => {
